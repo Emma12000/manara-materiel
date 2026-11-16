@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F3864">
+<meta name="robots" content="noindex">
+<title>Matériel · Manara Productions</title>
+<style>
+:root{--navy:#1F3864;--navy-2:#2a4a80;--ink:#14213a;--mute:#5b6b85;--line:#e3e8f0;--bg:#f4f6fa;--ok:#1b7a4b;--ok-bg:#e3f4ea;--out:#b25e00;--out-bg:#fff1df;--ko:#b3261e;--ko-bg:#fde8e6;--warn:#7a5c00;--warn-bg:#fff7d6}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+header{background:var(--navy);color:#fff;padding:14px 18px calc(14px);position:sticky;top:0;z-index:5}
+header .row{max-width:880px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+header b{letter-spacing:.08em;font-size:14px}
+header a{color:#fff;text-decoration:none;font-size:14px;opacity:.85;padding:6px 10px;border:1px solid rgba(255,255,255,.35);border-radius:8px}
+main{max-width:880px;margin:0 auto;padding:18px 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.code{font:600 13px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mute);letter-spacing:.04em}
+h1{font-size:24px;margin:6px 0 2px;line-height:1.2}
+h2{font-size:17px;margin:0 0 12px}
+.sub{color:var(--mute);margin:0}
+.badge{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;padding:5px 10px;border-radius:999px}
+.badge::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.b-ok{color:var(--ok);background:var(--ok-bg)}.b-out{color:var(--out);background:var(--out-bg)}.b-ko{color:var(--ko);background:var(--ko-bg)}.b-warn{color:var(--warn);background:var(--warn-bg)}
+.status{margin-top:14px;padding:14px;border-radius:10px;background:var(--bg)}
+.status p{margin:4px 0}
+.late{color:var(--ko);font-weight:600}
+label{display:block;font-size:14px;font-weight:600;margin:14px 0 6px}
+input,select,textarea{width:100%;font:inherit;padding:12px;border:1px solid #c9d2e0;border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--navy-2);outline-offset:1px}
+textarea{min-height:70px;resize:vertical}
+.pin{letter-spacing:.5em;font-size:22px;text-align:center}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:14px 16px;width:100%;margin-top:18px;cursor:pointer;background:var(--navy);color:#fff}
+button.alt{background:var(--out)}
+button:disabled{opacity:.55;cursor:default}
+.msg{margin-top:14px;padding:12px 14px;border-radius:10px;font-weight:500}
+.msg.ok{background:var(--ok-bg);color:var(--ok)}.msg.err{background:var(--ko-bg);color:var(--ko)}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.hist li:first-child{border-top:0}
+.hist .t{font-weight:600}
+.hist .d{color:var(--mute);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat .n{font-size:26px;font-weight:700;line-height:1}
+.stat .l{font-size:12px;color:var(--mute);margin-top:6px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters input{flex:1 1 220px}
+.filters select{flex:0 1 180px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid #c9d2e0;background:#fff;border-radius:999px;padding:7px 12px;font-size:14px;cursor:pointer;width:auto;margin:0;color:var(--ink);font-weight:500}
+.chip[aria-pressed=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-top:1px solid var(--line);font-size:14px;vertical-align:top}
+th{background:#f8fafc;border-top:0;font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
+td a{color:var(--navy);font-weight:600;text-decoration:none}
+.muted{color:var(--mute)}
+.loading{color:var(--mute);padding:30px 0;text-align:center}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.hide-sm{display:none}h1{font-size:21px}}
+</style>
+</head>
+<body>
+<header><div class="row"><b>MANARA PRODUCTIONS · MATÉRIEL</b><a href="./" id="navlink">Tableau de bord</a></div></header>
+<main id="app"><p class="loading">Chargement…</p></main>
+<script>
+const SB_URL = "https://rljthufcivaiqebdyibu.supabase.co";
+const SB_KEY = "sb_publishable_8ePg85PCBeY0Wb76eIJVMA_GmqyIcau";
+const ETATS = {bon:["Bon état","b-ok"],a_verifier:["À vérifier","b-warn"],en_panne:["En panne","b-ko"],perdu:["Perdu","b-ko"]};
+const app = document.getElementById("app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDT = d => d ? new Date(d).toLocaleString("fr-FR",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}) : "";
+const fmtD = d => d ? new Date(d+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}) : "";
+const today = () => new Date().toISOString().slice(0,10);
+const isLate = r => r.statut==="sorti" && r.retour_prevu && r.retour_prevu < today();
+
+async function api(path, opts={}) {
+  const res = await fetch(SB_URL + "/rest/v1/" + path, {
+    ...opts,
+    headers: {apikey: SB_KEY, Authorization: "Bearer " + SB_KEY, "Content-Type": "application/json", ...(opts.headers||{})}
+  });
+  const txt = await res.text();
+  const data = txt ? JSON.parse(txt) : null;
+  if (!res.ok) throw new Error((data && (data.message || data.hint)) || "Erreur réseau (" + res.status + ")");
+  return data;
+}
+
+function statusBadge(r){
+  if (r.etat==="en_panne"||r.etat==="perdu") return `<span class="badge ${ETATS[r.etat][1]}">${ETATS[r.etat][0]}</span>`;
+  if (r.statut==="sorti") return `<span class="badge ${isLate(r)?"b-ko":"b-out"}">${isLate(r)?"En retard":"Sorti"}</span>`;
+  return `<span class="badge b-ok">Disponible</span>`;
+}
+
+/* ---------- Fiche équipement ---------- */
+async function fiche(code){
+  document.getElementById("navlink").textContent = "Tableau de bord";
+  const [rows, hist] = await Promise.all([
+    api("statut_materiel?code=eq." + encodeURIComponent(code)),
+    api("mouvements?code=eq." + encodeURIComponent(code) + "&select=type,projet,retour_prevu,etat_constate,commentaire,created_at,membres(nom)&order=created_at.desc&limit=15")
+  ]);
+  if (!rows.length) { app.innerHTML = `<div class="card"><h1>Équipement introuvable</h1><p class="sub">Le code <b>${esc(code)}</b> n'existe pas dans l'inventaire.</p></div>`; return; }
+  const r = rows[0];
+  document.title = r.code + " · " + r.designation;
+  const bloque = r.etat==="en_panne" || r.etat==="perdu";
+  let statusHtml = r.statut==="sorti"
+    ? `<p><b>Chez :</b> ${esc(r.detenteur)}</p><p><b>Projet :</b> ${esc(r.projet)}</p><p><b>Sorti le :</b> ${fmtDT(r.dernier_mouvement)}</p>${r.retour_prevu?`<p class="${isLate(r)?"late":""}"><b>Retour prévu :</b> ${fmtD(r.retour_prevu)}${isLate(r)?" (en retard)":""}</p>`:""}`
+    : `<p>Disponible au stock${r.dernier_mouvement?` depuis le ${fmtDT(r.dernier_mouvement)}`:""}.</p>`;
+  const form = r.statut==="sorti" ? `
+    <div class="card"><h2>Rendre cet équipement</h2>
+      <label for="etat">État au retour</label>
+      <select id="etat"><option value="bon">Bon état</option><option value="a_verifier">À vérifier (doute, accessoire manquant…)</option><option value="en_panne">En panne / endommagé</option><option value="perdu">Perdu</option></select>
+      <label for="com">Commentaire (facultatif)</label><textarea id="com" maxlength="500" placeholder="Ex. rayure sur l'écran, batterie à 20 %"></textarea>
+      <label for="pin">Votre code PIN (6 chiffres)</label><input id="pin" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]*">
+      <button id="go" class="alt">Confirmer le retour</button><div id="msg"></div></div>`
+    : bloque ? `<div class="card"><h2>Sortie impossible</h2><p class="sub">Cet équipement est signalé « ${ETATS[r.etat][0].toLowerCase()} ». Voir le responsable matériel.</p></div>`
+    : `<div class="card"><h2>Sortir cet équipement</h2>
+      <label for="projet">Projet / tournage</label><input id="projet" maxlength="120" placeholder="Ex. Couverture FICSA, Podcast ep. 12">
+      <label for="retour">Retour prévu</label><input id="retour" type="date" min="${today()}">
+      <label for="com">Commentaire (facultatif)</label><textarea id="com" maxlength="500" placeholder="Ex. avec 2 batteries et la housse"></textarea>
+      <label for="pin">Votre code PIN (6 chiffres)</label><input id="pin" class="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" pattern="[0-9]*">
+      <button id="go">Confirmer la sortie</button><div id="msg"></div></div>`;
+  const histHtml = hist.length ? hist.map(h => `<li><span class="t">${h.type==="sortie"?"Sortie":"Retour"}</span> · ${esc(h.membres?.nom)} <span class="d">· ${fmtDT(h.created_at)}</span>
+      <div class="d">${h.type==="sortie" ? esc(h.projet) + (h.retour_prevu?` · retour prévu ${fmtD(h.retour_prevu)}`:"") : (ETATS[h.etat_constate]?.[0]||"")}${h.commentaire?` · ${esc(h.commentaire)}`:""}</div></li>`).join("")
+    : `<li class="muted">Aucun mouvement enregistré.</li>`;
+  app.innerHTML = `
+    <div class="card"><div class="code">${esc(r.code)}</div><h1>${esc(r.designation)}</h1>
+      <p class="sub">${esc([r.modele, r.categorie].filter(Boolean).join(" · "))}</p>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${statusBadge(r)}${r.etat==="a_verifier"?`<span class="badge b-warn">À vérifier</span>`:""}</div>
+      <div class="status">${statusHtml}</div>${r.notes?`<p class="sub" style="margin-top:10px">${esc(r.notes)}</p>`:""}</div>
+    ${form}
+    <div class="card"><h2>Historique</h2><ul class="hist">${histHtml}</ul></div>`;
+  const go = document.getElementById("go");
+  if (!go) return;
+  go.onclick = async () => {
+    const msg = document.getElementById("msg"), pin = document.getElementById("pin").value.trim();
+    msg.className = ""; msg.textContent = "";
+    if (!/^\d{6}$/.test(pin)) { msg.className="msg err"; msg.textContent="Le PIN doit faire 6 chiffres."; return; }
+    const body = r.statut==="sorti"
+      ? {p_code:r.code, p_pin:pin, p_etat:document.getElementById("etat").value, p_commentaire:document.getElementById("com").value}
+      : {p_code:r.code, p_pin:pin, p_projet:document.getElementById("projet").value, p_retour_prevu:document.getElementById("retour").value||null, p_commentaire:document.getElementById("com").value};
+    if (r.statut!=="sorti" && !body.p_projet.trim()) { msg.className="msg err"; msg.textContent="Indiquez le projet ou le tournage."; return; }
+    go.disabled = true; go.textContent = "Enregistrement…";
+    try {
+      const res = await api("rpc/" + (r.statut==="sorti" ? "rendre_materiel" : "sortir_materiel"), {method:"POST", body:JSON.stringify(body)});
+      if (!res || !res.ok) throw new Error((res && res.error) || "Opération refusée.");
+      await fiche(code);
+      app.insertAdjacentHTML("afterbegin", `<div class="msg ok">${r.statut==="sorti"?"Retour":"Sortie"} enregistré(e) au nom de ${esc(res.membre)}.</div>`);
+      window.scrollTo(0,0);
+    } catch(e) { msg.className="msg err"; msg.textContent=e.message; go.disabled=false; go.textContent = r.statut==="sorti"?"Confirmer le retour":"Confirmer la sortie"; }
+  };
+}
+
+/* ---------- Tableau de bord ---------- */
+let ALL = [], filtre = "tous";
+async function dashboard(){
+  document.getElementById("navlink").textContent = "Actualiser";
+  ALL = await api("statut_materiel?select=*&order=code");
+  const sortis = ALL.filter(r=>r.statut==="sorti"), retard = sortis.filter(isLate), ko = ALL.filter(r=>r.etat!=="bon");
+  const cats = [...new Set(ALL.map(r=>r.categorie))].sort((a,b)=>a.localeCompare(b,"fr"));
+  app.innerHTML = `
+    <div class="stats">
+      <div class="stat"><div class="n">${ALL.length}</div><div class="l">Équipements</div></div>
+      <div class="stat"><div class="n" style="color:var(--ok)">${ALL.length - sortis.length}</div><div class="l">Disponibles</div></div>
+      <div class="stat"><div class="n" style="color:var(--out)">${sortis.length}</div><div class="l">Sortis</div></div>
+      <div class="stat"><div class="n" style="color:var(--ko)">${retard.length}</div><div class="l">En retard</div></div>
+    </div>
+    <div class="chips" role="group" aria-label="Filtrer">
+      ${[["tous","Tout"],["sorti","Sortis"],["retard","En retard"],["dispo","Disponibles"],["etat","À vérifier / en panne ("+ko.length+")"]].map(([k,l])=>`<button class="chip" data-f="${k}" aria-pressed="${k===filtre}">${l}</button>`).join("")}
+    </div>
+    <div class="filters"><input id="q" type="search" placeholder="Rechercher : code, Sony, batterie, nom…">
+      <select id="cat"><option value="">Toutes catégories</option>${cats.map(c=>`<option>${esc(c)}</option>`).join("")}</select></div>
+    <div id="list"></div>`;
+  app.querySelectorAll(".chip").forEach(b => b.onclick = () => { filtre=b.dataset.f; app.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderList(); });
+  document.getElementById("q").oninput = renderList;
+  document.getElementById("cat").onchange = renderList;
+  renderList();
+}
+function renderList(){
+  const q = document.getElementById("q").value.trim().toLowerCase(), cat = document.getElementById("cat").value;
+  let rows = ALL.filter(r =>
+    (!cat || r.categorie===cat) &&
+    (filtre==="tous" || (filtre==="sorti"&&r.statut==="sorti") || (filtre==="retard"&&isLate(r)) || (filtre==="dispo"&&r.statut!=="sorti") || (filtre==="etat"&&r.etat!=="bon")) &&
+    (!q || [r.code,r.designation,r.modele,r.categorie,r.detenteur,r.projet].join(" ").toLowerCase().includes(q)));
+  document.getElementById("list").innerHTML = rows.length ? `<table><thead><tr><th>Équipement</th><th>Statut</th><th class="hide-sm">Chez / projet</th><th class="hide-sm">Retour prévu</th></tr></thead><tbody>${
+    rows.map(r=>`<tr><td><a href="?c=${encodeURIComponent(r.code)}">${esc(r.designation)}</a><div class="code" style="margin-top:4px">${esc(r.code)}${r.modele?` · ${esc(r.modele)}`:""}</div></td>
+      <td>${statusBadge(r)}${r.statut==="sorti"?`<div class="muted" style="font-size:13px;margin-top:4px">${esc(r.detenteur)}</div>`:""}</td>
+      <td class="hide-sm">${r.statut==="sorti"?`${esc(r.detenteur)}<div class="muted">${esc(r.projet)}</div>`:`<span class="muted">—</span>`}</td>
+      <td class="hide-sm ${isLate(r)?"late":""}">${r.statut==="sorti"?fmtD(r.retour_prevu)||"—":"—"}</td></tr>`).join("")}</tbody></table>`
+    : `<p class="loading">Aucun équipement ne correspond.</p>`;
+}
+
+const code = new URLSearchParams(location.search).get("c");
+(code ? fiche(code.trim().toUpperCase()) : dashboard()).catch(e => { app.innerHTML = `<div class="card"><h1>Connexion impossible</h1><p class="sub">${esc(e.message)}. Vérifiez la connexion internet puis rechargez la page.</p></div>`; });
+</script>
+</body>
+</html>
